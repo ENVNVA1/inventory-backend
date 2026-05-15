@@ -1,0 +1,34 @@
+const express = require('express');
+const router = express.Router();
+const routeStarController = require('../controllers/routeStarController');
+const { authenticate, requireAdmin } = require('../middleware/auth');
+const { setActivityMeta } = require('../middleware/activityLogger');
+
+
+router.post('/sync/items', authenticate, requireAdmin(), setActivityMeta('SYNC', 'ROUTESTAR_ITEM'), routeStarController.syncItems);
+router.post('/sync/pending', authenticate, requireAdmin(), setActivityMeta('SYNC', 'ROUTESTAR_INVOICE'), routeStarController.syncPending);
+router.get('/invoice-range', authenticate, setActivityMeta('VIEW', 'ROUTESTAR_INVOICE'), routeStarController.getInvoiceRange);
+router.post('/sync/closed', authenticate, requireAdmin(), setActivityMeta('SYNC', 'ROUTESTAR_INVOICE'), routeStarController.syncClosed);
+router.post('/sync/details/:invoiceNumber', authenticate, requireAdmin(), setActivityMeta('SYNC', 'ROUTESTAR_INVOICE'), routeStarController.syncInvoiceDetails);
+router.post('/sync/all-details', authenticate, requireAdmin(), setActivityMeta('SYNC', 'ROUTESTAR_INVOICE'), routeStarController.syncAllDetails);
+router.post('/sync/pending-details', authenticate, requireAdmin(), setActivityMeta('SYNC', 'ROUTESTAR_INVOICE'), routeStarController.syncPendingDetails);
+router.post('/sync/closed-details', authenticate, requireAdmin(), setActivityMeta('SYNC', 'ROUTESTAR_INVOICE'), routeStarController.syncClosedDetails);
+router.post('/sync/pending-with-details', authenticate, requireAdmin(), setActivityMeta('SYNC', 'ROUTESTAR_INVOICE'), routeStarController.syncPendingWithDetails);
+router.post('/sync/closed-with-details', authenticate, requireAdmin(), setActivityMeta('SYNC', 'ROUTESTAR_INVOICE'), routeStarController.syncClosedWithDetails);
+router.get('/check-pending', authenticate, requireAdmin(), setActivityMeta('VERIFY', 'ROUTESTAR_INVOICE'), routeStarController.checkPending);
+router.post('/sync/stock', authenticate, requireAdmin(), setActivityMeta('SYNC', 'STOCK'), routeStarController.syncStock);
+router.post('/sync/full', authenticate, requireAdmin(), setActivityMeta('SYNC', 'ROUTESTAR_INVOICE'), routeStarController.fullSync);
+router.get('/invoices', authenticate, setActivityMeta('VIEW', 'ROUTESTAR_INVOICE'), routeStarController.getInvoices);
+router.get('/invoices/:invoiceNumber', authenticate, setActivityMeta('VIEW', 'ROUTESTAR_INVOICE'), routeStarController.getInvoiceByNumber);
+router.get('/stats', authenticate, setActivityMeta('VIEW', 'ROUTESTAR_INVOICE'), routeStarController.getStats);
+router.delete('/invoices/pending/all', authenticate, requireAdmin(), setActivityMeta('DELETE', 'ROUTESTAR_INVOICE'), routeStarController.deleteAllPending);
+router.delete('/invoices/closed/all', authenticate, requireAdmin(), setActivityMeta('DELETE', 'ROUTESTAR_INVOICE'), routeStarController.deleteAllClosed);
+router.get('/items/grouped', authenticate, setActivityMeta('VIEW', 'ROUTESTAR_ITEM'), routeStarController.getGroupedItems);
+router.get('/items/:itemName/invoices', authenticate, setActivityMeta('VIEW', 'ROUTESTAR_INVOICE'), routeStarController.getInvoicesByItem);
+router.post('/invoices/bulk-delete', authenticate, requireAdmin(), setActivityMeta('DELETE', 'ROUTESTAR_INVOICE'), routeStarController.bulkDeleteInvoices);
+router.post('/invoices/bulk-delete-by-numbers', authenticate, requireAdmin(), setActivityMeta('DELETE', 'ROUTESTAR_INVOICE'), routeStarController.bulkDeleteByNumbers);
+router.get('/items', authenticate, setActivityMeta('VIEW', 'ROUTESTAR_ITEM'), routeStarController.getItems);
+router.get('/items/low-stock', authenticate, requireAdmin(), setActivityMeta('VIEW', 'ROUTESTAR_ITEM'), routeStarController.getLowStockItems);
+router.delete('/items/all', authenticate, requireAdmin(), setActivityMeta('DELETE', 'ROUTESTAR_ITEM'), routeStarController.deleteAllItems);
+router.get('/items/invoice-usage', authenticate, setActivityMeta('VIEW', 'ROUTESTAR_ITEM'), routeStarController.getItemInvoiceUsage);
+module.exports = router;
