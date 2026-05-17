@@ -1,0 +1,52 @@
+const path = require('path');
+const fs = require('fs');
+const logger = require('./Logger'); // Fixed: capital L
+const timeoutConfig = require('../config/timeout.config');
+
+
+const screenshotsDir = path.join(__dirname, '../../../screenshots');
+if (!fs.existsSync(screenshotsDir)) {
+  fs.mkdirSync(screenshotsDir, { recursive: true });
+}
+async function captureScreenshot(page, name) {
+  try {
+    const timestamp = new Date().toISOString().replace(/:/g, '-').split('.')[0];
+    const filename = `${name}-${timestamp}.png`;
+    const filepath = path.join(screenshotsDir, filename);
+    await page.screenshot({
+      path: filepath,
+      fullPage: true,
+      timeout: timeoutConfig.screenshot  
+    });
+    logger.debug('Screenshot captured', { filename });
+    return filepath;
+  } catch (error) {
+    logger.error('Screenshot capture failed', { error: error.message });
+    return null;
+  }
+}
+async function captureElementScreenshot(page, selector, name) {
+  try {
+    const element = await page.$(selector);
+    if (!element) {
+      logger.warn('Element not found for screenshot', { selector });
+      return null;
+    }
+    const timestamp = new Date().toISOString().replace(/:/g, '-').split('.')[0];
+    const filename = `${name}-${timestamp}.png`;
+    const filepath = path.join(screenshotsDir, filename);
+    await element.screenshot({
+      path: filepath,
+      timeout: timeoutConfig.screenshot  
+    });
+    logger.debug('Element screenshot captured', { filename, selector });
+    return filepath;
+  } catch (error) {
+    logger.error('Element screenshot capture failed', { error: error.message });
+    return null;
+  }
+}
+module.exports = {
+  captureScreenshot,
+  captureElementScreenshot
+};
